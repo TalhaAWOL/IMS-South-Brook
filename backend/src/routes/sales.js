@@ -3,7 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import * as XLSX from 'xlsx';
+import XLSX from 'xlsx';
 import db from '../db/database.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -42,7 +42,9 @@ const upload = multer({
 
 // Parse Milton Itemized Sales report format
 function parseMiltonSalesReport(filePath) {
-  const workbook = XLSX.readFile(filePath);
+  // Read file as buffer for better ES module compatibility
+  const fileBuffer = fs.readFileSync(filePath);
+  const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
   const sheetName = workbook.SheetNames[0];
   const worksheet = workbook.Sheets[sheetName];
 
